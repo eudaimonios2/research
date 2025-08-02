@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # ✅ Add this
+from flask_cors import CORS  # ← ADD THIS LINE
 
 import requests
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
-CORS(app)  # ✅ Allow frontend access from GitHub Pages
+CORS(app)  # ← ADD THIS LINE TOO
 
 @app.route("/fetch", methods=["POST"])
 def fetch_books():
