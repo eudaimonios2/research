@@ -2,36 +2,76 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Book Fetcher</title>
+  <title>📚 Book Fetcher</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 40px;
+      max-width: 700px;
+      line-height: 1.5;
+    }
+    textarea {
+      width: 100%;
+      font-family: monospace;
+    }
+    pre {
+      background: #f0f0f0;
+      padding: 10px;
+      overflow-x: auto;
+      border-radius: 6px;
+    }
+  </style>
 </head>
 <body>
-  <h1>📚 Research Book Downloader</h1>
 
-  <textarea id="bookList" rows="10" cols="50" placeholder="One title per line..."></textarea><br><br>
+  <h1>📚 Book Fetcher for NotebookLM</h1>
 
-  <label for="source">Source:</label>
-  <select id="source">
-    <option value="oceanofpdf">OceanOfPDF</option>
+  <label for="bookList">Enter book titles (one per line):</label><br>
+  <textarea id="bookList" rows="10" placeholder="Example:
+The Republic by Plato
+Civilization and Its Discontents by Freud
+"></textarea><br><br>
+
+  <label for="sourceSelect">Choose Source:</label>
+  <select id="sourceSelect" disabled>
+    <option value="oceanofpdf" selected>OceanOfPDF (enabled)</option>
   </select><br><br>
 
   <button onclick="fetchBooks()">Search & Download</button>
 
-  <pre id="result"></pre>
+  <h3>📦 Results:</h3>
+  <pre id="resultArea">Waiting for results...</pre>
 
   <script>
     async function fetchBooks() {
-      const titles = document.getElementById('bookList').value.trim().split('\n');
-      const source = document.getElementById('source').value;
+      const titles = document.getElementById('bookList').value
+        .trim()
+        .split('\n')
+        .filter(line => line.trim() !== "");
 
-      const res = await fetch('https://your-backend-url.com/fetch', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({titles, source})
-      });
+      const source = document.getElementById('sourceSelect').value;
 
-      const data = await res.json();
-      document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+      document.getElementById('resultArea').textContent = "Fetching...";
+
+      try {
+        const response = await fetch('https://research-2-xxc3.onrender.com/fetch', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ titles, source })
+        });
+
+        if (!response.ok) {
+          throw new Error("Server error: " + response.status);
+        }
+
+        const result = await response.json();
+        document.getElementById('resultArea').textContent = JSON.stringify(result, null, 2);
+
+      } catch (err) {
+        document.getElementById('resultArea').textContent = "⚠️ Error:\n" + err.message;
+      }
     }
   </script>
+
 </body>
 </html>
