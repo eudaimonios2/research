@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Fetcher</title>
+</head>
+<body>
+  <h1>📚 Research Book Downloader</h1>
+
+  <textarea id="bookList" rows="10" cols="50" placeholder="One title per line..."></textarea><br><br>
+
+  <label for="source">Source:</label>
+  <select id="source">
+    <option value="oceanofpdf">OceanOfPDF</option>
+  </select><br><br>
+
+  <button onclick="fetchBooks()">Search & Download</button>
+
+  <pre id="result"></pre>
+
+  <script>
+    async function fetchBooks() {
+      const titles = document.getElementById('bookList').value.trim().split('\n');
+      const source = document.getElementById('source').value;
+
+      const res = await fetch('https://your-backend-url.com/fetch', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({titles, source})
+      });
+
+      const data = await res.json();
+      document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
