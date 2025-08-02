@@ -4,23 +4,26 @@ from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
-@app.route('/fetch', methods=['POST'])
+@app.route("/fetch", methods=["POST"])
 def fetch_books():
     data = request.json
-    titles = data.get('titles', [])
-    source = data.get('source', 'oceanofpdf')
-
+    titles = data.get("titles", [])
+    source = data.get("source", "oceanofpdf")
     results = {}
 
     for title in titles:
         if source == "oceanofpdf":
-            search_url = f"https://oceanofpdf.com/?s={title.replace(' ', '+')}"
-            html = requests.get(search_url).text
-            soup = BeautifulSoup(html, 'html.parser')
+            url = f"https://oceanofpdf.com/?s={title.replace(' ', '+')}"
+            res = requests.get(url)
+            soup = BeautifulSoup(res.text, 'html.parser')
             link = soup.select_one('.entry-title a')
-            results[title] = link['href'] if link else 'Not found'
+            results[title] = link['href'] if link else "Not found"
 
     return jsonify(results)
 
-if __name__ == '__main__':
-    app.run(port=5000)
+@app.route("/", methods=["GET"])
+def home():
+    return "📚 Research Fetcher is online."
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
